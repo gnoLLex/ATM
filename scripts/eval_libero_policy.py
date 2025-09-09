@@ -7,7 +7,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # input parameters
 parser = argparse.ArgumentParser()
-parser.add_argument("--suite", default="libero_goal", choices=["libero_spatial", "libero_object", "libero_goal", "libero_10"], 
+parser.add_argument("--suite", default="libero_goal", choices=["human_im"], 
                     help="The name of the desired suite, where libero_10 is the alias of libero_long.")
 parser.add_argument("--exp-dir", required=True, help="The path to the folder of trained policy.")
 args = parser.parse_args()
@@ -16,7 +16,7 @@ args = parser.parse_args()
 train_gpu_ids = [0, 1, 2, 3]
 env_gpu_ids = [4, 5, 6, 7]
 
-root_dir = "./data/atm_libero"
+root_dir = "./data/atm_robocasa"
 suite_name = args.suite
 task_dir_list = os.listdir(os.path.join(root_dir, suite_name))
 task_dir_list.sort()

@@ -19,7 +19,7 @@ train_gpus: [0]
 
 # Training
 lr: 5e-4
-batch_size: 128
+batch_size: 2
 mix_precision: false
 num_workers: 8
 val_freq: 5
@@ -42,7 +42,7 @@ val_dataset: ???
 val_num_demos: null
 
 env_cfg:
-  env_type: libero
+  env_type: robocasa
   render_gpu_ids: 0
   vec_env_num: 10
   horizon: 600

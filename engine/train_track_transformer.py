@@ -45,6 +45,9 @@ def main(cfg: DictConfig):
     model, optimizer = fabric.setup(model, optimizer)
     train_loader = fabric.setup_dataloaders(train_loader)
 
+    model.mark_forward_method("forward_loss")
+    model.mark_forward_method("forward_vis")
+
     lbd_track = cfg.lbd_track
     lbd_img = cfg.lbd_img
     p_img = cfg.p_img

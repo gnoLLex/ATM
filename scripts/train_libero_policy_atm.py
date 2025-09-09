@@ -15,7 +15,7 @@ DEFAULT_TRACK_TRANSFORMERS = {
 
 # input parameters
 parser = argparse.ArgumentParser()
-parser.add_argument("--suite", default="libero_goal", choices=["libero_spatial", "libero_object", "libero_goal", "libero_10"], 
+parser.add_argument("--suite", default="libero_goal", choices=["libero_spatial", "libero_object", "libero_goal", "libero_10", "human_im"], 
                     help="The name of the desired suite, where libero_10 is the alias of libero_long.")
 parser.add_argument("-tt", "--track-transformer", default=None, help="Then path to the trained track transformer.")
 args = parser.parse_args()
@@ -26,7 +26,7 @@ CONFIG_NAME = "libero_vilt"
 train_gpu_ids = [0, 1, 2, 3]
 NUM_DEMOS = 10
 
-root_dir = "./data/atm_libero/"
+root_dir = "./data/atm_robocasa/"
 suite_name = args.suite
 task_dir_list = os.listdir(os.path.join(root_dir, suite_name))
 task_dir_list.sort()

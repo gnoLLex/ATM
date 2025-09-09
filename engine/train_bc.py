@@ -69,6 +69,9 @@ def main(cfg: DictConfig):
     model, optimizer = fabric.setup(model, optimizer)
     train_loader = fabric.setup_dataloaders(train_loader)
 
+    model.mark_forward_method("forward_loss")
+    model.mark_forward_method("forward_vis")
+
     # Pick ckpt based on  the average of the last 5 epochs
     metric_logger = MetricLogger(delimiter=" ")
     best_loss_logger = BestAvgLoss(window_size=5)
