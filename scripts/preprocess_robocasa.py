@@ -213,8 +213,8 @@ def collect_states_from_demo(h5_file, image_save_dir, demos_group, demo_k, view_
             view_grp.__delitem__("tracks")
         if "vis" in view_grp:
             view_grp.__delitem__("vis")
-        view_grp.create_dataset("tracks", data=pred_tracks)
-        view_grp.create_dataset("vis", data=pred_vis)
+        view_grp.create_dataset("tracks", data=pred_tracks.cpu().numpy())
+        view_grp.create_dataset("vis", data=pred_vis.cpu().numpy())
 
         # save image pngs
         save_images(rearrange(rgb, "t c h w -> t h w c"), image_save_dir, view)
