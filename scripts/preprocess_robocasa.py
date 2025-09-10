@@ -134,6 +134,24 @@ def track_through_video(video, track_model, num_points=1000):
     pred_vis = torch.cat([pred_grid_vis, pred_vis], dim=2)
     return pred_tracks, pred_vis
 
+def track_through_video_online(video, track_model, grid_size=7):
+    """
+    Online CoTracker inference to reduce GPU memory usage.
+    video: numpy array [T, C, H, W], uint8
+    """
+    device = "cuda"
+    video = torch.from_numpy(video).unsqueeze(0).float().to(device)  # [1, T, C, H, W]
+
+    # Initialize online cotracker
+    track_model(video_chunk=video[:, :track_model.step * 2], is_first_step=True, grid_size=grid_size)
+
+    for ind in range(0, video.shape[1] - track_model.step, track_model.step):
+        chunk = video[:, ind : ind + track_model.step * 2]
+        pred_tracks, pred_vis = track_model(video_chunk=chunk)
+        # pred_tracks: [B, T, N, 2], pred_vis: [B, T, N, 1]
+
+    return pred_tracks.cpu(), pred_vis.cpu()
+
 
 def collect_states_from_demo(h5_file, image_save_dir, demos_group, demo_k, view_names, track_model, task_emb, num_points, visualizer, save_vis=False):
     actions = np.array(demos_group[demo_k]['actions'])
@@ -175,7 +193,8 @@ def collect_states_from_demo(h5_file, image_save_dir, demos_group, demo_k, view_
         rgb = rearrange(rgb, "t h w c -> t c h w")
         T, C, H, W = rgb.shape
 
-        pred_tracks, pred_vis = track_through_video(rgb, track_model, num_points=num_points)
+        # pred_tracks, pred_vis = track_through_video(rgb, track_model, num_points=num_points)
+        pred_tracks, pred_vis = track_through_video_online(rgb, track_model, grid_size=15)
 
         if save_vis:
             visualizer.visualize(torch.from_numpy(rgb)[None], pred_tracks, pred_vis, filename=f"{demo_k}_{view}")
@@ -282,7 +301,7 @@ def main(root, save, suite, skip_exist):
     suite_dir = os.path.join(root, suite)
 
     # setup cotracker
-    cotracker = torch.hub.load(os.path.join(os.path.expanduser("~"), ".cache/torch/hub/facebookresearch_co-tracker_main/"), "cotracker2", source="local")
+    cotracker = torch.hub.load("facebookresearch/co-tracker", "cotracker3_online")
     cotracker = cotracker.eval().cuda()
 
     # load task name embeddings
